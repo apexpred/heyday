@@ -1,0 +1,11 @@
+{
+  "name": "mytime",
+  "version": "1.0.0",
+  "description": "An easy to use time converter because dealing with timezones is tedious",
+  "main": "mytime.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "David Omar",
+  "license": "MIT"
+}
