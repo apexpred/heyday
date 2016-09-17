@@ -13,55 +13,79 @@ class MyTime {
     this.day = this.date.getUTCDate();
     this.year = this.date.getUTCFullYear();
     this.month = this.date.getUTCMonth() + 1;
-    this.hours = this.date.getUTCHours();
-    this.minutes = this.date.getUTCMinutes();
-    this.tz = tz;
-    this.format = 24;
-    this.local = {} //creating seperate time object for local time
+    this.hour = this.date.getUTCHours();
+    this.minutes = this.date.getUTCMinutes()
+    //creating seperate time object for local time
+    this.local = {
+      hour: null,
+      minutes: this.minutes,
+      tz: tz,
+      format: 12,
+      amOrPm: '',
+    };
+  }
+
+  //initialize the local time
+  init() {
+    this.setLocalHour();
+    return this;
   }
 
   getRelativeTimeHM() {
-    return `${handleTimeMath24(this.hours, tzAbbr[this.tz])}:${this.minutes}`;
+    return `${handleTimeMath24(this.hour, tzAbbr[this.tz])}:${this.minutes}`;
   }
 
   getTimeHM() {
-    return `${this.hours}:${this.minutes}`;
+    return `${this.hour}:${this.minutes}`;
+  }
+
+  setLocalHour() {
+    if (this.local.format === 24) {
+      this.local.hour = handleTimeMath24(this.hour, this.local.tz);
+    } else if (this.local.format === 12) {
+      let time = handleTimeMath12(this.hour, this.local.tz);
+      this.local.hour = time.hour;
+      this.local.amOrPm = time.amOrPm;
+    } else {
+      return new Error('Invalid time format(Either 24 or 12 hour format)');
+    }
   }
 
 }
 
 //adds the timezone offset to the current UTC hours and returns the new time
 //uses 24 hour format
-function handleTimeMath24(currentUTCHours, tzOffset) {
-  if ((currentUTCHours + tzOffset) > 0) {
-    return currentUTCHours + tzOffset;
-  } else if ((currentUTCHours + tzOffset) < 0) {
-    let offset = currentUTCHours + tzOffset;
+function handleTimeMath24(currentUTCHour, tz) {
+  if ((currentUTCHour + tzAbbr[tz]) > 0) {
+    return currentUTCHour + tzAbbr[tz];
+  } else if ((currentUTCHour + tzAbbr[tz]) < 0) {
+    let offset = currentUTCHour + tzAbbr[tz];
     return 24 + offset;
   }
 }
 
 //adds the timezone offset to the current UTC hours and returns the new time
 //uses 12 hour format
-function handleTimeMath12(myTimeObj, tzOffset) {
-  let localHour = handleTimeMath24(myTimeObj.hours, tzAbbr[myTimeObj.tz])
-  console.log(localHour);
+function handleTimeMath12(currentUTCHour, tz) {
+  let localHour = handleTimeMath24(currentUTCHour, tz)
   if (localHour >= 0 && localHour < 12) {
     if (localHour === 0) {
-      return `12:${myTimeObj.minutes} AM`;
+      return {hour: 12, amOrPm: 'AM'};
     } else {
-        return `${localHour}:${myTimeObj.minutes} AM`;
+        return {hour: localHour, amOrPm: 'AM'};
     }
   } else {
-    let hour = Math.abs(localHour - 12);
-    if (hour === 0) {
-        return `12:${myTimeObj.minutes} PM`;
+    localHour = Math.abs(localHour - 12);
+    if (localHour === 0) {
+        return {hour: 12, amOrPm: 'PM'};
     } else {
-      return `${hour}:${myTimeObj.minutes} PM`;
+      return {hour: localHour, amOrPm: 'PM'};
     }
   }
 
 }
 
 const time = new MyTime('EDT');
-console.log(handleTimeMath12(time));
+//console.log(time);
+time.init();
+console.log(time);
