@@ -16,10 +16,12 @@ class MyTime {
     this.hours = this.date.getUTCHours();
     this.minutes = this.date.getUTCMinutes();
     this.tz = tz;
+    this.format = 24;
+    this.local = {} //creating seperate time object for local time
   }
 
   getRelativeTimeHM() {
-    return `${handleTimeMath(this.hours, tzAbbr[this.tz])}:${this.minutes}`;
+    return `${handleTimeMath24(this.hours, tzAbbr[this.tz])}:${this.minutes}`;
   }
 
   getTimeHM() {
@@ -29,7 +31,8 @@ class MyTime {
 }
 
 //adds the timezone offset to the current UTC hours and returns the new time
-function handleTimeMath(currentUTCHours, tzOffset) {
+//uses 24 hour format
+function handleTimeMath24(currentUTCHours, tzOffset) {
   if ((currentUTCHours + tzOffset) > 0) {
     return currentUTCHours + tzOffset;
   } else if ((currentUTCHours + tzOffset) < 0) {
@@ -38,6 +41,27 @@ function handleTimeMath(currentUTCHours, tzOffset) {
   }
 }
 
+//adds the timezone offset to the current UTC hours and returns the new time
+//uses 12 hour format
+function handleTimeMath12(myTimeObj, tzOffset) {
+  let localHour = handleTimeMath24(myTimeObj.hours, tzAbbr[myTimeObj.tz])
+  console.log(localHour);
+  if (localHour >= 0 && localHour < 12) {
+    if (localHour === 0) {
+      return `12:${myTimeObj.minutes} AM`;
+    } else {
+        return `${localHour}:${myTimeObj.minutes} AM`;
+    }
+  } else {
+    let hour = Math.abs(localHour - 12);
+    if (hour === 0) {
+        return `12:${myTimeObj.minutes} PM`;
+    } else {
+      return `${hour}:${myTimeObj.minutes} PM`;
+    }
+  }
+
+}
+
 const time = new MyTime('EDT');
-console.log(time.getTimeHM());
-console.log(time.getRelativeTimeHM());
+console.log(handleTimeMath12(time));
