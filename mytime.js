@@ -31,14 +31,6 @@ class MyTime {
     return this;
   }
 
-  getRelativeTimeHM() {
-    return `${handleTimeMath24(this.hour, tzAbbr[this.tz])}:${this.minutes}`;
-  }
-
-  getTimeHM() {
-    return `${this.hour}:${this.minutes}`;
-  }
-
   setLocalHour() {
     if (this.local.format === 24) {
       this.local.hour = handleTimeMath24(this.hour, this.local.tz);
@@ -49,6 +41,18 @@ class MyTime {
     } else {
       return new Error('Invalid time format(Either 24 or 12 hour format)');
     }
+  }
+
+  setTZ(tz) {
+    this.local.tz = tz; //later add some validation
+    this.setLocalHour();
+    return this;
+  }
+
+  setFormat(format) {
+    this.local.format = format; //add some validation
+    this.setLocalHour();
+    return this;
   }
 
 }
@@ -85,7 +89,7 @@ function handleTimeMath12(currentUTCHour, tz) {
 
 }
 
-const time = new MyTime('EDT');
-//console.log(time);
-time.init();
-console.log(time);
+const time = new MyTime('EDT').init();
+console.log(time.local);
+time.setTZ('PDT').setFormat(24);
+console.log(time.local);
