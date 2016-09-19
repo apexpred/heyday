@@ -5,13 +5,17 @@ const tzAbbr = {
   'PDT': -7,
 }
 
+const Months = [
+  'Jan', 'Feb', 'March', 'April', 'May', 'June', 'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec',
+];
+
 class MyTime {
 
   constructor(tz = null) {
     this.date = new Date();
     this.day = this.date.getUTCDate();
     this.year = this.date.getUTCFullYear();
-    this.month = this.date.getUTCMonth() + 1;
+    this.month = this.date.getUTCMonth();
     this.hour = this.date.getUTCHours();
     this.minutes = this.date.getUTCMinutes();
     //creating seperate time object for local time
@@ -65,6 +69,24 @@ class MyTime {
     this.local.format = format;
     this.setLocalHour();
     return this;
+  }
+
+  //returns the local time as a readable string
+  now() {
+    if (this.local.format === 24) {
+      return `${this.local.hour}:${this.local.minutes} ${this.local.tz}`;
+    }
+
+    return `${this.local.hour}:${this.local.minutes} ${this.local.amOrPm} ${this.local.tz}`;
+  }
+
+  //returns the date as a string like Sept 12, 2016
+  //a little more tricky than I thought to get the actual day because of everyone hitting 12am at diff times
+  //will look into later!!!!!
+  getDate() {
+    let day;
+    if (this.hour >= 0 && (this.local.hour < 24 && this.local.hour > this.hour))
+    return `${Months[this.month]} ${this.day}, ${this.year}`;
   }
 
 }
