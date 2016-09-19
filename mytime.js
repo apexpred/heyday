@@ -1,4 +1,3 @@
-//lets start with some easy common ones
 const tzAbbr = {
   'EST': -5, //the value is the hour offset from UTC
   'EDT': -4,
@@ -14,7 +13,7 @@ class MyTime {
     this.year = this.date.getUTCFullYear();
     this.month = this.date.getUTCMonth() + 1;
     this.hour = this.date.getUTCHours();
-    this.minutes = this.date.getUTCMinutes()
+    this.minutes = this.date.getUTCMinutes();
     //creating seperate time object for local time
     this.local = {
       hour: null,
@@ -44,13 +43,26 @@ class MyTime {
   }
 
   setTZ(tz) {
-    this.local.tz = tz; //later add some validation
+    if (tzAbbr[tz] === undefined) {
+      throw new Error('Call to setTZ has invalid argument');
+    } else if (tz === this.local.tz) {
+      return this;
+    }
+
+    this.local.tz = tz;
     this.setLocalHour();
     return this;
   }
 
   setFormat(format) {
-    this.local.format = format; //add some validation
+    if (format === this.local.format) {
+      return this;
+    } else if (format !== 24 && format !== 12) {
+      console.log(format !== 24);
+      throw new Error('Call to setFormat has invalid argument');
+    }
+
+    this.local.format = format;
     this.setLocalHour();
     return this;
   }
@@ -88,8 +100,3 @@ function handleTimeMath12(currentUTCHour, tz) {
   }
 
 }
-
-const time = new MyTime('EDT').init();
-console.log(time.local);
-time.setTZ('PDT').setFormat(24);
-console.log(time.local);
