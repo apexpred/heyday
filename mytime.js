@@ -20,30 +20,50 @@ class MyTime {
     this.minutes = this.date.getUTCMinutes();
     //creating seperate time object for local time
     this.local = {
-      hour: null,
-      minutes: this.minutes,
+      format24: {
+        hour: null,
+        minutes: null,
+        day: null,
+        month: null,
+        year: null,
+      },
+      format12: {
+        hour: null,
+        minutes: null,
+        day: null,
+        month: null,
+        year: null,
+        amOrPm: '',
+      },
+      date: null,
       tz: tz,
-      format: 12,
-      amOrPm: '',
+      format: 24,
     };
   }
 
   //initialize the local time
   init() {
-    this.setLocalHour();
+    this.setLocalTime();
     return this;
   }
 
-  setLocalHour() {
-    if (this.local.format === 24) {
-      this.local.hour = handleTimeMath24(this.hour, this.local.tz);
-    } else if (this.local.format === 12) {
-      let time = handleTimeMath12(this.hour, this.local.tz);
-      this.local.hour = time.hour;
-      this.local.amOrPm = time.amOrPm;
-    } else {
-      return new Error('Invalid time format(Either 24 or 12 hour format)');
-    }
+  setLocalTime() {
+    // if (this.local.format === 24) {
+    //   this.local.hour = handleTimeMath24(this.hour, this.local.tz);
+    // } else if (this.local.format === 12) {
+    //   let time = handleTimeMath12(this.hour, this.local.tz);
+    //   this.local.hour = time.hour;
+    //   this.local.amOrPm = time.amOrPm;
+    // } else {
+    //   return new Error('Invalid time format(Either 24 or 12 hour format)');
+    // }
+    //
+    this.local.date = new Date(this.date.valueOf() + (tzAbbr[this.local.tz] * 3600000)); //3600000 ms in an hour
+    this.local.format24.day = this.local.date.getDate();
+    this.local.format24.month = this.local.date.getUTCMonth();
+    this.local.format24.year = this.local.date.getUTCFullYear();
+    this.local.format24.hour = this.local.date.getUTCHours();
+    this.local.format24.minutes = this.local.date.getUTCMinutes();
   }
 
   setTZ(tz) {
@@ -91,33 +111,20 @@ class MyTime {
 
 }
 
-//adds the timezone offset to the current UTC hours and returns the new time
-//uses 24 hour format
-function handleTimeMath24(currentUTCHour, tz) {
-  if ((currentUTCHour + tzAbbr[tz]) > 0) {
-    return currentUTCHour + tzAbbr[tz];
-  } else if ((currentUTCHour + tzAbbr[tz]) < 0) {
-    let offset = currentUTCHour + tzAbbr[tz];
-    return 24 + offset;
-  }
-}
-
-//adds the timezone offset to the current UTC hours and returns the new time
-//uses 12 hour format
+//converts to 12 hour format
 function handleTimeMath12(currentUTCHour, tz) {
-  let localHour = handleTimeMath24(currentUTCHour, tz)
-  if (localHour >= 0 && localHour < 12) {
-    if (localHour === 0) {
+  if (currentUTCHour >= 0 && currentUTCHour < 12) {
+    if (currentUTCHour === 0) {
       return {hour: 12, amOrPm: 'AM'};
     } else {
-        return {hour: localHour, amOrPm: 'AM'};
+        return {hour: currentUTCHour, amOrPm: 'AM'};
     }
   } else {
-    localHour = Math.abs(localHour - 12);
-    if (localHour === 0) {
+    currentUTCHour = Math.abs(currentUTCHour - 12);
+    if (currentUTCHour === 0) {
         return {hour: 12, amOrPm: 'PM'};
     } else {
-      return {hour: localHour, amOrPm: 'PM'};
+      return {hour: currentUTCHour, amOrPm: 'PM'};
     }
   }
 
