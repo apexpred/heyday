@@ -77,7 +77,6 @@ class MyTime {
     }
 
     this.local.format = format;
-    this.setLocalHour();
     return this;
   }
 
@@ -87,7 +86,7 @@ class MyTime {
       return `${this.local.format24.hour}:${this.local.format24.minutes} ${this.local.tz}`;
     }
 
-    return `${this.local.format12.hour}:${this.local.format12.minutes} ${this.local.format12.amOrPm} ${this.local.format12.tz}`;
+    return `${this.local.format12.hour}:${this.local.format24.minutes} ${this.local.format12.amOrPm} ${this.local.tz}`;
   }
 
   //returns the date as a string like Sept 12, 2016
