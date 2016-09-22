@@ -29,10 +29,6 @@ class MyTime {
       },
       format12: {
         hour: null,
-        minutes: null,
-        day: null,
-        month: null,
-        year: null,
         amOrPm: '',
       },
       date: null,
@@ -48,22 +44,16 @@ class MyTime {
   }
 
   setLocalTime() {
-    // if (this.local.format === 24) {
-    //   this.local.hour = handleTimeMath24(this.hour, this.local.tz);
-    // } else if (this.local.format === 12) {
-    //   let time = handleTimeMath12(this.hour, this.local.tz);
-    //   this.local.hour = time.hour;
-    //   this.local.amOrPm = time.amOrPm;
-    // } else {
-    //   return new Error('Invalid time format(Either 24 or 12 hour format)');
-    // }
-    //
     this.local.date = new Date(this.date.valueOf() + (tzAbbr[this.local.tz] * 3600000)); //3600000 ms in an hour
     this.local.format24.day = this.local.date.getDate();
     this.local.format24.month = this.local.date.getUTCMonth();
     this.local.format24.year = this.local.date.getUTCFullYear();
     this.local.format24.hour = this.local.date.getUTCHours();
     this.local.format24.minutes = this.local.date.getUTCMinutes();
+    
+    const format12 = handleTimeMath12(this.local.format24.hour, this.local.tz);
+    this.local.format12.hour = format12.hour;
+    this.local.format12.amOrPm = format12.amOrPm;
   }
 
   setTZ(tz) {
@@ -94,19 +84,15 @@ class MyTime {
   //returns the local time as a readable string
   now() {
     if (this.local.format === 24) {
-      return `${this.local.hour}:${this.local.minutes} ${this.local.tz}`;
+      return `${this.local.format24.hour}:${this.local.format24.minutes} ${this.local.tz}`;
     }
 
-    return `${this.local.hour}:${this.local.minutes} ${this.local.amOrPm} ${this.local.tz}`;
+    return `${this.local.format12.hour}:${this.local.format12.minutes} ${this.local.format12.amOrPm} ${this.local.format12.tz}`;
   }
 
   //returns the date as a string like Sept 12, 2016
-  //a little more tricky than I thought to get the actual day because of everyone hitting 12am at diff times
-  //will look into later!!!!!
   getDate() {
-    let day;
-    if (this.hour >= 0 && (this.local.hour < 24 && this.local.hour > this.hour))
-    return `${Months[this.month]} ${this.day}, ${this.year}`;
+    return `${Months[this.local.format24.month]} ${this.local.format24.day}, ${this.local.format24.year}`;
   }
 
 }
