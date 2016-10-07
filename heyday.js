@@ -1,15 +1,25 @@
+//currently only working with US timezones
 const tzAbbr = {
   'EST': -5, //the value is the hour offset from UTC
   'EDT': -4,
   'PST': -8,
   'PDT': -7,
+  'CST': -6,
+  'CDT': -5,
+  'MST': -7,
+  'MDT': -6,
+  'HST': -10,
+  'AKST': -9,
+  'AKDT': -8,
 }
+
+const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
 const Months = [
   'Jan', 'Feb', 'March', 'April', 'May', 'June', 'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec',
 ];
 
-class MyTime {
+class HeyDay {
 
   constructor(tz = null) {
     this.date = new Date();
@@ -26,6 +36,7 @@ class MyTime {
         day: null,
         month: null,
         year: null,
+        weekDay: null,
       },
       format12: {
         hour: null,
@@ -50,7 +61,8 @@ class MyTime {
     this.local.format24.year = this.local.date.getUTCFullYear();
     this.local.format24.hour = this.local.date.getUTCHours();
     this.local.format24.minutes = this.local.date.getUTCMinutes();
-    
+    this.local.format24.weekDay = weekdays[this.local.date.getUTCDay()];
+
     const format12 = handleTimeMath12(this.local.format24.hour, this.local.tz);
     this.local.format12.hour = format12.hour;
     this.local.format12.amOrPm = format12.amOrPm;
@@ -72,7 +84,6 @@ class MyTime {
     if (format === this.local.format) {
       return this;
     } else if (format !== 24 && format !== 12) {
-      console.log(format !== 24);
       throw new Error('Call to setFormat has invalid argument');
     }
 
@@ -83,9 +94,16 @@ class MyTime {
   //returns the local time as a readable string
   now() {
     if (this.local.format === 24) {
+      if (this.local.format24.minutes < 10) {
+        return `${this.local.format24.hour}:0${this.local.format24.minutes} ${this.local.tz}`;
+      }
+
       return `${this.local.format24.hour}:${this.local.format24.minutes} ${this.local.tz}`;
     }
 
+    if (this.local.format24.minutes < 10) {
+      return `${this.local.format12.hour}:0${this.local.format24.minutes} ${this.local.format12.amOrPm} ${this.local.tz}`;
+    }
     return `${this.local.format12.hour}:${this.local.format24.minutes} ${this.local.format12.amOrPm} ${this.local.tz}`;
   }
 
@@ -114,3 +132,6 @@ function handleTimeMath12(currentUTCHour, tz) {
   }
 
 }
+
+const miami = new HeyDay('MDT').init();
+console.log(miami.setFormat(12).now());
