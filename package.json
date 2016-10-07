@@ -1,11 +1,14 @@
 {
-  "name": "mytime",
+  "name": "heyday",
   "version": "1.0.0",
   "description": "An easy to use time converter because dealing with timezones is tedious",
-  "main": "mytime.js",
+  "main": "heyday.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha"
   },
   "author": "David Omar",
-  "license": "MIT"
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "mocha": "^3.1.0"
+  }
 }

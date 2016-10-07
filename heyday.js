@@ -50,6 +50,9 @@ class HeyDay {
 
   //initialize the local time
   init() {
+    if (this.local.tz === null) {
+      return this
+    }
     this.setLocalTime();
     return this;
   }
@@ -76,7 +79,7 @@ class HeyDay {
     }
 
     this.local.tz = tz;
-    this.setLocalHour();
+    this.setLocalTime();
     return this;
   }
 
@@ -133,5 +136,4 @@ function handleTimeMath12(currentUTCHour, tz) {
 
 }
 
-const miami = new HeyDay('MDT').init();
-console.log(miami.setFormat(12).now());
+module.exports = HeyDay;
