@@ -66,7 +66,7 @@ class HeyDay {
     this.local.format24.minutes = this.local.date.getUTCMinutes();
     this.local.format24.weekDay = weekdays[this.local.date.getUTCDay()];
 
-    const format12 = handleTimeMath12(this.local.format24.hour, this.local.tz);
+    const format12 = handleTimeMath12(this.local.format24.hour);
     this.local.format12.hour = format12.hour;
     this.local.format12.amOrPm = format12.amOrPm;
   }
@@ -118,7 +118,7 @@ class HeyDay {
 }
 
 //converts to 12 hour format
-function handleTimeMath12(currentUTCHour, tz) {
+function handleTimeMath12(currentUTCHour) {
   if (currentUTCHour >= 0 && currentUTCHour < 12) {
     if (currentUTCHour === 0) {
       return {hour: 12, amOrPm: 'AM'};
