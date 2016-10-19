@@ -115,6 +115,22 @@ class HeyDay {
     return `${Months[this.local.format24.month]} ${this.local.format24.day}, ${this.local.format24.year}`;
   }
 
+  getTimeApart(heydayObj, humanReadable) {
+    if (!(heydayObj instanceof HeyDay)) {
+      throw new Error('First argument must be a HeyDay Object');
+    }
+    if (humanReadable === undefined || humanReadable === false) {
+      return Math.abs(this.local.format24.hour - heydayObj.local.format24.hour);
+    }
+
+    let timeApart = this.local.format24.hour - heydayObj.local.format24.hour;
+    if (timeApart < 0) {
+      return `You are ${Math.abs(timeApart)} hour(s) behind`;
+    } else {
+      return `You are ${timeApart} hour(s) ahead`;
+    }
+  }
+
 }
 
 //converts to 12 hour format

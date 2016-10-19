@@ -76,5 +76,36 @@ describe('HeyDay', function () {
       assert.isNumber(t.local.format);
       assert.equal(t.local.format, 12);
     });
+
+    it('"getTimeApart" returns amount of time two HeyDay objects are apart from each other relative to tz',
+      function () {
+        let t1 = new HeyDay('EDT').init();
+        let t2 = new HeyDay('PDT').init();
+        let timeApart = t1.getTimeApart(t2);
+
+        assert.isNumber(timeApart);
+        assert.equal(timeApart, 3);
+      });
+
+    it('"getTimeApart" returns human readable string if second argument is set to true', function () {
+      let t1 = new HeyDay('EDT').init();
+      let t2 = new HeyDay('HST').init();
+      let timeApart = t1.getTimeApart(t2, true);
+
+      assert.isString(timeApart);
+      assert.equal(timeApart, 'You are 6 hour(s) ahead');
+
+      t1.setTZ('MDT');
+      assert.equal(t1.getTimeApart(t2, true), 'You are 4 hour(s) ahead');
+      assert.equal(t2.getTimeApart(t1, true), 'You are 4 hour(s) behind');
+    });
+
+    it('"getTimeApart" throws an error when passed anything other than HeyDay object on first argument',
+      function () {
+        let t1 = new HeyDay('AKST').init();
+        assert.throws(t1.getTimeApart.bind(t1, {}), 'First argument must be a HeyDay Object');
+      });
+
   });
-});
+
+}); //end describe('HeyDay')
