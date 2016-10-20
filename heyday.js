@@ -1,5 +1,6 @@
 //currently only working with US timezones
 const tzAbbr = {
+  'UTC': 0,
   'EST': -5, //the value is the hour offset from UTC
   'EDT': -4,
   'PST': -8,
@@ -59,7 +60,7 @@ class HeyDay {
 
   setLocalTime() {
     this.local.date = new Date(this.date.valueOf() + (tzAbbr[this.local.tz] * 3600000)); //3600000 ms in an hour
-    this.local.format24.day = this.local.date.getDate();
+    this.local.format24.day = this.local.date.getUTCDate();
     this.local.format24.month = this.local.date.getUTCMonth();
     this.local.format24.year = this.local.date.getUTCFullYear();
     this.local.format24.hour = this.local.date.getUTCHours();
@@ -116,19 +117,45 @@ class HeyDay {
   }
 
   getTimeApart(heydayObj, humanReadable) {
+    let timeApart;
+
     if (!(heydayObj instanceof HeyDay)) {
       throw new Error('First argument must be a HeyDay Object');
     }
-    if (humanReadable === undefined || humanReadable === false) {
-      return Math.abs(this.local.format24.hour - heydayObj.local.format24.hour);
+
+    //if one timezone is on diff day then we need another way to get the time apart
+    if (this.local.format24.day !== heydayObj.local.format24.day) {
+      //get the time object that is behind a day
+      let behind = this.local.format24.day < heydayObj.local.format24.day ? this : heydayObj;
+      let ahead = this.local.format24.day > heydayObj.local.format24.day ? this : heydayObj;
+      timeApart = (24 - behind.local.format24.hour) + ahead.local.format24.hour;
+
+      if (humanReadable === undefined || humanReadable === false) {
+        return timeApart;
+      } else{
+        if (Object.is(this, behind)) {
+          return `You are ${timeApart} hour(s) behind`;
+        } else if (Object.is(this, ahead)) {
+          return `You are ${timeApart} hour(s) ahead`;
+        } else {
+          return 'You are in the same timezone';
+        }
+      }
+    } else {
+      timeApart = this.local.format24.hour - heydayObj.local.format24.hour;
+      if (humanReadable === undefined || humanReadable === false) {
+        return Math.abs(timeApart);
+      }
+
+      if (timeApart < 0) {
+        return `You are ${Math.abs(timeApart)} hour(s) behind`
+      } else if (timeApart > 0) {
+        return `You are ${timeApart} hour(s) ahead`;
+      } else {
+        return 'You are in same timezone';
+      }
     }
 
-    let timeApart = this.local.format24.hour - heydayObj.local.format24.hour;
-    if (timeApart < 0) {
-      return `You are ${Math.abs(timeApart)} hour(s) behind`;
-    } else {
-      return `You are ${timeApart} hour(s) ahead`;
-    }
   }
 
 }
