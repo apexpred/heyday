@@ -53,9 +53,12 @@ class HeyDay {
   init() {
     if (this.local.tz === null) {
       return this
+    } else if (tzAbbr[this.local.tz] === undefined) {
+      throw new Error('Invalid timezone passed as argument to constructor');
+    } else {
+      this.setLocalTime();
+      return this;
     }
-    this.setLocalTime();
-    return this;
   }
 
   setLocalTime() {

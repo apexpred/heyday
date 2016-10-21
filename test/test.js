@@ -44,6 +44,13 @@ describe('HeyDay', function () {
       assert.equal(t.local.tz, 'HST');
     });
 
+    it('"setTZ" throws an error if passed an invalid or non supported timezone', function () {
+      let t = new HeyDay();
+      assert.throws(t.setTZ.bind(t, 'PDD'), 'Call to setTZ has invalid argument');
+      assert.throws(t.setTZ.bind(t, 12), 'Call to setTZ has invalid argument');
+      assert.throws(t.setTZ.bind(t), 'Call to setTZ has invalid argument');
+    });
+
     it('"now" returns the current time in h:m format with timezone abbreviation', function () {
       let t = new HeyDay('EDT').init();
       let hour = t.local.format24.hour;
